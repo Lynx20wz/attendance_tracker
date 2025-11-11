@@ -25,7 +25,17 @@ class Student {
   String name;
   StudentStatus status = StudentStatus.unknown;
 
-  Student(this.name);
+  Student(this.name, {this.status = StudentStatus.unknown});
+
+  Map<String, String> toJson() => {'name': name, 'status': status.name};
+
+  @override
+  String toString() => toJson().toString();
+
+  static Student fromJson(Map<String, dynamic> json) => Student(
+    json['name']!,
+    status: StudentStatus.values.byName(json['status']!),
+  );
 }
 
 class StudentWidget extends StatefulWidget {

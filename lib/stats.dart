@@ -3,15 +3,15 @@ import 'package:presents/student.dart';
 import 'package:presents/theme.dart';
 
 class StatsPage extends StatelessWidget {
-  final List<Student> students;
+  final List<Student>? students;
 
   const StatsPage(this.students, {super.key});
 
-  Map<StudentStatus, List<Student>> get statusCounts {
-    final count = <StudentStatus, List<Student>>{};
+  Map<StudentStatus, List<Student>?> get statusCounts {
+    final count = <StudentStatus, List<Student>?>{};
     for (var status in StudentStatus.values) {
       count[status] = students
-          .where((student) => student.status == status)
+          ?.where((student) => student.status == status)
           .toList();
     }
     return count;
@@ -73,47 +73,50 @@ class _StatsCardState extends State<StatsCard> {
             borderRadius: BorderRadius.circular(10),
           ),
         ),
-        onPressed: () {
-          setState(() {
-            _isExpanded = !_isExpanded;
-          });
-        },
+        onPressed: () => setState(() => _isExpanded = !_isExpanded),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               widget.status.toString().split('.').last,
-              style: TextStyle(fontSize: 20, color: Colors.white),
+              style: const TextStyle(fontSize: 20, color: Colors.white),
             ),
             Text(
               widget.students.length.toString(),
-              style: TextStyle(fontSize: 24, color: Colors.white),
+              style: const TextStyle(fontSize: 24, color: Colors.white),
             ),
           ],
         ),
       ),
 
-      if (_isExpanded) ...[
-        Container(
+      AnimatedCrossFade(
+        duration: const Duration(milliseconds: 300),
+        firstChild: Container(width: 300, color: widget.color),
+        secondChild: Container(
           decoration: BoxDecoration(
             color: widget.color,
-            borderRadius: BorderRadius.only(
+            borderRadius: const BorderRadius.only(
               bottomLeft: Radius.circular(10),
               bottomRight: Radius.circular(10),
             ),
           ),
           width: 300,
-          padding: EdgeInsets.all(12),
+          padding: const EdgeInsets.all(12),
           child: Column(
             children: widget.students.isNotEmpty
                 ? [
-                    for (var student in widget.students)
+                    for (var student
+                        in widget.students
+                          ..sort((a, b) => a.name.compareTo(b.name)))
                       Text(
                         student.name,
-                        style: TextStyle(fontSize: 20, color: Colors.white),
+                        style: const TextStyle(
+                          fontSize: 20,
+                          color: Colors.white,
+                        ),
                       ),
                   ]
-                : [
+                : const [
                     Text(
                       'No students',
                       style: TextStyle(fontSize: 20, color: Colors.white),
@@ -121,7 +124,10 @@ class _StatsCardState extends State<StatsCard> {
                   ],
           ),
         ),
-      ],
+        crossFadeState: _isExpanded
+            ? CrossFadeState.showSecond
+            : CrossFadeState.showFirst,
+      ),
     ],
   );
 }
