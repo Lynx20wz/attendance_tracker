@@ -81,28 +81,31 @@ class _StatsCardState extends State<StatsCard>
         ),
       ),
       AnimatedSize(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        child: _isExpanded
-            ? Container(
-                decoration: BoxDecoration(
-                  color: widget.color,
-                  borderRadius: const BorderRadius.vertical(
-                    bottom: Radius.circular(10),
-                  ),
-                ),
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: widget.students.isNotEmpty
-                      ? widget.students
-                            .map((s) => Text(s.name, style: _whiteText))
-                            .toList()
-                      : const [Text('No students', style: _whiteText)],
-                ),
-              )
-            : const SizedBox.shrink(),
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+        child: ConstrainedBox(
+          constraints: _isExpanded
+              ? const BoxConstraints()
+              : const BoxConstraints(maxHeight: 0),
+          child: Container(
+            width: 300,
+            decoration: BoxDecoration(
+              color: widget.color,
+              borderRadius: const BorderRadius.vertical(
+                bottom: Radius.circular(10),
+              ),
+            ),
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: widget.students.isNotEmpty
+                  ? widget.students
+                        .map((s) => Text(s.name, style: _whiteText))
+                        .toList()
+                  : const [Text('No students', style: _whiteText)],
+            ),
+          ),
+        ),
       ),
     ],
   );
