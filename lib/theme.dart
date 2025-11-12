@@ -35,6 +35,12 @@ class AppTheme {
       style: TextButton.styleFrom(foregroundColor: Colors.white),
     ),
 
+    snackBarTheme: SnackBarThemeData(
+      backgroundColor: AppColors.darkerGray,
+      contentTextStyle: const TextStyle(color: Colors.white),
+      behavior: SnackBarBehavior.floating,
+    ),
+
     // Другие настройки
     colorScheme: ColorScheme.dark(
       primary: AppColors.darkGray,

@@ -25,8 +25,9 @@ class StudentRepository {
 
       if (await file.exists()) {
         final json = jsonDecode(await file.readAsString());
+
         final date = DateTime.fromMillisecondsSinceEpoch(json['timestamp']);
-        if (date.isSameDay(DateTime.now())) {
+        if (date.isSameDay(DateTime.now()) && json['students'].length > 0) {
           return [for (var s in json['students']) Student.fromJson(s)];
         }
       }
@@ -64,7 +65,6 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) => MaterialApp(
     title: 'Presents',
     theme: AppTheme.darkTheme,
-    debugShowCheckedModeBanner: false,
     home: const HomePage(),
   );
 }
@@ -79,7 +79,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   final repo = StudentRepository();
-  List<Student>? students;
+  List<Student> students = [];
 
   @override
   void initState() {
@@ -96,52 +96,74 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused && students != null) {
-      repo.save(students!);
+    if (state == AppLifecycleState.paused) {
+      repo.save(students);
+      log('Students saved: $students');
     }
   }
 
   Future<void> _load() async {
     students = await repo.load();
+    log('Students loaded: $students');
     setState(() {});
   }
 
   @override
-  Widget build(BuildContext context) {
-    if (students == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
-    return Scaffold(
-      appBar: AppBar(
-        title: TextButton(
-          style: TextButton.styleFrom(
-            splashFactory: NoSplash.splashFactory,
-            overlayColor: Colors.transparent,
-          ),
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => StatsPage(students!)),
-          ),
-          child: const Text('List', style: TextStyle(fontSize: 24)),
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      title: TextButton(
+        style: TextButton.styleFrom(
+          splashFactory: NoSplash.splashFactory,
+          overlayColor: Colors.transparent,
         ),
-        centerTitle: true,
-        backgroundColor: AppColors.darkerGray,
-        toolbarHeight: 50,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => StatsPage(students)),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Center(
+                child: Text('List', style: TextStyle(fontSize: 24)),
+              ),
+            ),
+            IconButton(
+              onPressed: () => setState(() {
+                students.resetStatus();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Center(
+                      child: Text(
+                        'Статусы сброшены',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
+                  ),
+                );
+                repo.save(students);
+              }),
+              icon: Icon(Icons.replay_outlined, size: 24),
+            ),
+          ],
         ),
       ),
-      body: Container(
-        margin: const EdgeInsets.all(10),
-        color: AppColors.darkGray,
-        child: ListView.separated(
-          padding: const EdgeInsets.all(8),
-          separatorBuilder: (_, _) => const SizedBox(height: cardGap),
-          itemCount: students!.length,
-          itemBuilder: (_, i) => Center(child: StudentWidget(students![i])),
-        ),
+      backgroundColor: AppColors.darkerGray,
+      toolbarHeight: 50,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
       ),
-    );
-  }
+    ),
+    body: Container(
+      margin: const EdgeInsets.all(10),
+      color: AppColors.darkGray,
+      child: students.isEmpty
+          ? emptyWidget
+          : ListView.separated(
+              padding: const EdgeInsets.all(8),
+              separatorBuilder: (_, _) => const SizedBox(height: cardGap),
+              itemCount: students.length,
+              itemBuilder: (_, i) => Center(child: StudentWidget(students[i])),
+            ),
+    ),
+  );
 }

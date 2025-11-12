@@ -38,6 +38,11 @@ class Student {
   );
 }
 
+extension ResetStatus on List<Student> {
+  void resetStatus() =>
+      forEach((student) => student.status = StudentStatus.unknown);
+}
+
 class StudentWidget extends StatefulWidget {
   final Student student;
 
@@ -145,3 +150,5 @@ class _StudentWidgetState extends State<StudentWidget> {
     }
   }
 }
+
+final emptyWidget = StudentWidget(Student('No data'));
