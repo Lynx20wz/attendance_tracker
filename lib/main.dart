@@ -157,7 +157,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       margin: const EdgeInsets.all(10),
       color: AppColors.darkGray,
       child: students.isEmpty
-          ? emptyWidget
+          ? StudentWidget.empty()
           : ListView.separated(
               padding: const EdgeInsets.all(8),
               separatorBuilder: (_, _) => const SizedBox(height: cardGap),

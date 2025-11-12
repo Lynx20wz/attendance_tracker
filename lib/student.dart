@@ -44,9 +44,11 @@ extension ResetStatus on List<Student> {
 }
 
 class StudentWidget extends StatefulWidget {
-  final Student student;
+  final Student? student;
+  final bool isEmpty;
 
-  const StudentWidget(this.student, {super.key});
+  const StudentWidget.empty({super.key}) : student = null, isEmpty = true;
+  const StudentWidget(this.student, {super.key}) : isEmpty = false;
 
   @override
   State<StudentWidget> createState() => _StudentWidgetState();
@@ -56,84 +58,104 @@ class _StudentWidgetState extends State<StudentWidget> {
   double _dragOffset = 0.0;
 
   @override
-  Widget build(BuildContext context) => GestureDetector(
-    onHorizontalDragUpdate: (details) {
-      setState(() {
-        _dragOffset += details.delta.dx;
-        _dragOffset = _dragOffset.clamp(-50.0, 50.0);
-      });
-    },
-    onHorizontalDragEnd: (details) {
-      if (_dragOffset >= 50) {
-        setState(() => widget.student.status = StudentStatus.sick);
-      } else if (_dragOffset <= -50) {
-        setState(() => widget.student.status = StudentStatus.absent);
-      }
+  Widget build(BuildContext context) => widget.isEmpty
+      ? Container(
+          width: cardWidth,
+          height: cardHeight,
+          decoration: BoxDecoration(
+            color: AppColors.darkerGray,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          alignment: Alignment.center,
+          child: const Text(
+            'No data',
+            style: TextStyle(color: Colors.white70, fontSize: 22),
+          ),
+        )
+      : GestureDetector(
+          onHorizontalDragUpdate: (details) {
+            setState(() {
+              _dragOffset += details.delta.dx;
+              _dragOffset = _dragOffset.clamp(-50.0, 50.0);
+            });
+          },
+          onHorizontalDragEnd: (details) {
+            setState(
+              () => widget.student!.status = _dragOffset >= 50
+                  ? StudentStatus.sick
+                  : StudentStatus.absent,
+            );
 
-      _startSmoothReturn(delay: 50);
-    },
-    child: Stack(
-      children: [
-        if (_dragOffset.abs() > 1)
-          Container(
-            width: cardWidth,
-            height: cardHeight,
-            decoration: BoxDecoration(
-              color: _dragOffset > 0
-                  ? AppColors.sick.withAlpha(_dragOffset.abs().toInt() * 5)
-                  : AppColors.absent.withAlpha(_dragOffset.abs().toInt() * 5),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              alignment: _dragOffset > 0
-                  ? Alignment.centerLeft
-                  : Alignment.centerRight,
-              width: cardWidth,
-              height: cardHeight,
-              child: Icon(
-                _dragOffset > 0 ? Icons.masks : Icons.directions_run,
-                size: 32,
-                color: Color.fromARGB(
-                  _dragOffset.abs().toInt() * 5,
-                  255,
-                  255,
-                  255,
+            _startSmoothReturn(delay: 50);
+          },
+          child: Stack(
+            children: [
+              if (_dragOffset.abs() > 1)
+                Container(
+                  width: cardWidth,
+                  height: cardHeight,
+                  decoration: BoxDecoration(
+                    color: _dragOffset > 0
+                        ? AppColors.sick.withAlpha(
+                            _dragOffset.abs().toInt() * 5,
+                          )
+                        : AppColors.absent.withAlpha(
+                            _dragOffset.abs().toInt() * 5,
+                          ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    alignment: _dragOffset > 0
+                        ? Alignment.centerLeft
+                        : Alignment.centerRight,
+                    width: cardWidth,
+                    height: cardHeight,
+                    child: Icon(
+                      _dragOffset > 0 ? Icons.masks : Icons.directions_run,
+                      size: 32,
+                      color: Color.fromARGB(
+                        _dragOffset.abs().toInt() * 5,
+                        255,
+                        255,
+                        255,
+                      ),
+                    ),
+                  ),
+                ),
+              Transform.translate(
+                offset: Offset(_dragOffset, 0),
+                child: AnimatedContainer(
+                  duration: Duration(milliseconds: 200),
+                  width: cardWidth,
+                  height: cardHeight,
+                  decoration: BoxDecoration(
+                    color: getStatusColor(widget.student!.status),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    child: Text(
+                      widget.student!.name,
+                      style: TextStyle(color: Colors.white, fontSize: 28),
+                    ),
+                    onPressed: () => setState(
+                      () => widget.student!.status = StudentStatus.present,
+                    ),
+                    onLongPress: () => setState(
+                      () => widget.student!.status = StudentStatus.unknown,
+                    ),
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
-        Transform.translate(
-          offset: Offset(_dragOffset, 0),
-          child: AnimatedContainer(
-            duration: Duration(milliseconds: 200),
-            width: cardWidth,
-            height: cardHeight,
-            decoration: BoxDecoration(
-              color: getStatusColor(widget.student.status),
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            child: TextButton(
-              style: TextButton.styleFrom(
-                backgroundColor: Colors.transparent,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-              ),
-              child: Text(
-                widget.student.name,
-                style: TextStyle(color: Colors.white, fontSize: 28),
-              ),
-              onPressed: () =>
-                  setState(() => widget.student.status = StudentStatus.present),
-              onLongPress: () =>
-                  setState(() => widget.student.status = StudentStatus.unknown),
-            ),
-          ),
-        ),
-      ],
-    ),
-  );
+        );
 
   void _startSmoothReturn({
     int steps = 100,
@@ -150,5 +172,3 @@ class _StudentWidgetState extends State<StudentWidget> {
     }
   }
 }
-
-final emptyWidget = StudentWidget(Student('No data'));
