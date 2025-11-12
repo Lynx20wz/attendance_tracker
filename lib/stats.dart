@@ -2,48 +2,42 @@ import 'package:flutter/material.dart';
 import 'package:presents/student.dart';
 import 'package:presents/theme.dart';
 
+const _whiteText = TextStyle(color: Colors.white, fontSize: 20);
+
 class StatsPage extends StatelessWidget {
-  final List<Student>? students;
+  final Map<StudentStatus, List<Student>> statusCounts;
 
-  const StatsPage(this.students, {super.key});
-
-  Map<StudentStatus, List<Student>?> get statusCounts {
-    final count = <StudentStatus, List<Student>?>{};
-    for (var status in StudentStatus.values) {
-      count[status] = students
-          ?.where((student) => student.status == status)
-          .toList();
-    }
-    return count;
-  }
+  StatsPage(List<Student>? students, {super.key})
+    : statusCounts = {
+        for (var status in StudentStatus.values)
+          status:
+              (students ?? [])
+                  .where((s) => s.status == status)
+                  .toList(growable: false)
+                ..sort((a, b) => a.name.compareTo(b.name)),
+      };
 
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: Text('Stats', style: TextStyle(fontSize: 24)),
+      title: const Text('Stats', style: TextStyle(fontSize: 24)),
       centerTitle: true,
       backgroundColor: AppColors.darkerGray,
       toolbarHeight: 50,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(20),
-          bottomRight: Radius.circular(20),
-        ),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
       ),
     ),
-    body: Center(
-      child: Container(
-        margin: EdgeInsets.all(10),
-        child: ListView(
-          children: [
-            for (var status in StudentStatus.values)
-              Padding(
-                padding: EdgeInsets.only(bottom: 10),
-                child: StatsCard(statusCounts[status]!, status),
-              ),
-          ],
-        ),
-      ),
+    body: ListView.builder(
+      padding: const EdgeInsets.all(10),
+      itemCount: StudentStatus.values.length,
+      itemBuilder: (context, i) {
+        final status = StudentStatus.values[i];
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: StatsCard(statusCounts[status]!, status),
+        );
+      },
     ),
   );
 }
@@ -60,7 +54,8 @@ class StatsCard extends StatefulWidget {
   State<StatsCard> createState() => _StatsCardState();
 }
 
-class _StatsCardState extends State<StatsCard> {
+class _StatsCardState extends State<StatsCard>
+    with SingleTickerProviderStateMixin {
   bool _isExpanded = false;
 
   @override
@@ -77,56 +72,37 @@ class _StatsCardState extends State<StatsCard> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            Text(widget.status.name, style: _whiteText),
             Text(
-              widget.status.toString().split('.').last,
-              style: const TextStyle(fontSize: 20, color: Colors.white),
-            ),
-            Text(
-              widget.students.length.toString(),
-              style: const TextStyle(fontSize: 24, color: Colors.white),
+              '${widget.students.length}',
+              style: _whiteText.copyWith(fontSize: 24),
             ),
           ],
         ),
       ),
-
-      AnimatedCrossFade(
+      AnimatedSize(
         duration: const Duration(milliseconds: 300),
-        firstChild: Container(width: 300, color: widget.color),
-        secondChild: Container(
-          decoration: BoxDecoration(
-            color: widget.color,
-            borderRadius: const BorderRadius.only(
-              bottomLeft: Radius.circular(10),
-              bottomRight: Radius.circular(10),
-            ),
-          ),
-          width: 300,
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            children: widget.students.isNotEmpty
-                ? [
-                    for (var student
-                        in widget.students
-                          ..sort((a, b) => a.name.compareTo(b.name)))
-                      Text(
-                        student.name,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
-                        ),
-                      ),
-                  ]
-                : const [
-                    Text(
-                      'No students',
-                      style: TextStyle(fontSize: 20, color: Colors.white),
-                    ),
-                  ],
-          ),
-        ),
-        crossFadeState: _isExpanded
-            ? CrossFadeState.showSecond
-            : CrossFadeState.showFirst,
+        curve: Curves.easeInOut,
+        child: _isExpanded
+            ? Container(
+                decoration: BoxDecoration(
+                  color: widget.color,
+                  borderRadius: const BorderRadius.vertical(
+                    bottom: Radius.circular(10),
+                  ),
+                ),
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: widget.students.isNotEmpty
+                      ? widget.students
+                            .map((s) => Text(s.name, style: _whiteText))
+                            .toList()
+                      : const [Text('No students', style: _whiteText)],
+                ),
+              )
+            : const SizedBox.shrink(),
       ),
     ],
   );
