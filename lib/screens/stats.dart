@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:presents/providers.dart';
-import 'package:presents/student.dart';
-import 'package:presents/theme.dart';
+import 'package:attendance_tracker/providers.dart';
+import 'package:attendance_tracker/student.dart';
+import 'package:attendance_tracker/theme.dart';
 
 const _whiteText = TextStyle(color: Colors.white, fontSize: 20);
 

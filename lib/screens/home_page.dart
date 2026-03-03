@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:presents/providers.dart';
-import 'package:presents/screens/stats.dart';
-import 'package:presents/theme.dart';
-import 'package:presents/student.dart';
+import 'package:attendance_tracker/providers.dart';
+import 'package:attendance_tracker/screens/stats.dart';
+import 'package:attendance_tracker/theme.dart';
+import 'package:attendance_tracker/student.dart';
 
 const cardGap = 8.0;
 

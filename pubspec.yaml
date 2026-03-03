@@ -1,7 +1,7 @@
-name: presents
-description: A sample command-line application.
-version: 0.0.2
-# repository: https://github.com/my_org/my_repo
+name: attendance_tracker
+description: Student attendance tracker
+version: 0.1.0
+repository: https://github.com/Lynx20wz/attendance_tracker
 
 environment:
   sdk: ^3.9.0

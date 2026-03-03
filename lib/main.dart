@@ -1,8 +1,8 @@
 import 'dart:developer' show log;
 
 import 'package:flutter/material.dart';
-import 'package:presents/providers.dart';
-import 'package:presents/screens/home_page.dart';
+import 'package:attendance_tracker/providers.dart';
+import 'package:attendance_tracker/screens/home_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'theme.dart';
@@ -41,7 +41,7 @@ class _AppState extends ConsumerState<App> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-    title: 'Presents',
+    title: 'Attendance Tracker',
     theme: AppTheme.darkTheme,
     home: const HomePage(),
   );
