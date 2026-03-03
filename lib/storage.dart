@@ -9,28 +9,28 @@ import 'ext/is_same_day.dart';
 import 'student.dart';
 
 class StudentRepository {
-  Future<List<Student>> load() async {
-    try {
-      final dir = await getApplicationDocumentsDirectory();
-      final file = File('${dir.path}/cache.json');
+  Future<Set<Student>> load() async {
+    final dir = await getApplicationDocumentsDirectory();
 
-      if (await file.exists()) {
-        final json = jsonDecode(await file.readAsString());
+    final file = File('${dir.path}/cache.json');
 
-        final date = DateTime.fromMillisecondsSinceEpoch(json['timestamp']);
-        if (date.isSameDay(DateTime.now()) && json['students'].length > 0) {
-          return [for (var s in json['students']) Student.fromJson(s)];
-        }
+    if (await file.exists()) {
+      final json = jsonDecode(await file.readAsString());
+
+      final date = DateTime.fromMillisecondsSinceEpoch(json['timestamp']);
+      if (date.isSameDay(DateTime.now()) && json['students'].length > 0) {
+        return {for (var s in json['students']) Student.fromJson(s)};
       }
-    } catch (_) {}
+    }
+
     final lines = (await rootBundle.loadString(
       'assets/students.txt',
     )).split('\n').map((line) => line.trim()).takeWhile((l) => l != '---');
 
-    return [for (var student in lines) Student(student)];
+    return {for (var student in lines) Student(student)};
   }
 
-  Future<void> save(List<Student> students) async {
+  Future<void> save(Set<Student> students) async {
     try {
       final dir = await getApplicationDocumentsDirectory();
       final file = File('${dir.path}/cache.json');

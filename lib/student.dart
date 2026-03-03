@@ -1,7 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:presents/theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'theme.dart';
+import 'providers.dart';
 
 final cardHeight = 60.0;
 final cardWidth = 355.0;
@@ -22,7 +23,7 @@ Color getStatusColor(StudentStatus status) {
 enum StudentStatus { present, absent, sick, unknown }
 
 class Student {
-  String name;
+  final String name;
   StudentStatus status = StudentStatus.unknown;
 
   Student(this.name, {this.status = StudentStatus.unknown});
@@ -32,13 +33,16 @@ class Student {
   @override
   String toString() => toJson().toString();
 
+  Student copyWith({String? name, StudentStatus? status}) =>
+      Student(name ?? this.name, status: status ?? this.status);
+
   static Student fromJson(Map<String, dynamic> json) => Student(
     json['name']!,
     status: StudentStatus.values.byName(json['status']!),
   );
 }
 
-class StudentWidget extends StatefulWidget {
+class StudentWidget extends ConsumerStatefulWidget {
   final Student? student;
   final bool isEmpty;
 
@@ -46,11 +50,17 @@ class StudentWidget extends StatefulWidget {
   const StudentWidget(this.student, {super.key}) : isEmpty = false;
 
   @override
-  State<StudentWidget> createState() => _StudentWidgetState();
+  ConsumerState<StudentWidget> createState() => _StudentWidgetState();
 }
 
-class _StudentWidgetState extends State<StudentWidget> {
+class _StudentWidgetState extends ConsumerState<StudentWidget> {
   double _dragOffset = 0.0;
+
+  void setStudentStatus(StudentStatus status) {
+    ref
+        .read(studentsProvider.notifier)
+        .updateStudentStatus(widget.student!, status);
+  }
 
   @override
   Widget build(BuildContext context) => widget.isEmpty
@@ -74,11 +84,9 @@ class _StudentWidgetState extends State<StudentWidget> {
               _dragOffset = _dragOffset.clamp(-50.0, 50.0);
             });
           },
-          onHorizontalDragEnd: (details) {
-            setState(
-              () => widget.student!.status = _dragOffset >= 50
-                  ? StudentStatus.sick
-                  : StudentStatus.absent,
+          onHorizontalDragEnd: (_) {
+            setStudentStatus(
+              _dragOffset >= 50 ? StudentStatus.sick : StudentStatus.absent,
             );
 
             _startSmoothReturn(delay: 50);
@@ -139,12 +147,8 @@ class _StudentWidgetState extends State<StudentWidget> {
                       widget.student!.name,
                       style: TextStyle(color: Colors.white, fontSize: 28),
                     ),
-                    onPressed: () => setState(
-                      () => widget.student!.status = StudentStatus.present,
-                    ),
-                    onLongPress: () => setState(
-                      () => widget.student!.status = StudentStatus.unknown,
-                    ),
+                    onPressed: () => setStudentStatus(StudentStatus.present),
+                    onLongPress: () => setStudentStatus(StudentStatus.unknown),
                   ),
                 ),
               ),
@@ -157,7 +161,7 @@ class _StudentWidgetState extends State<StudentWidget> {
     int totalDuration = 200,
     int delay = 0,
   }) {
-    sleep(Duration(milliseconds: delay));
+    Future.delayed(Duration(milliseconds: delay));
     for (int i = 0; i < steps; i++) {
       Future.delayed(Duration(milliseconds: i * (totalDuration ~/ steps)), () {
         if (mounted) {

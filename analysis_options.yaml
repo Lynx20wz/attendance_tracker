@@ -6,7 +6,3 @@ linter:
     avoid_print: false
     prefer_final_locals: true
     prefer_final_fields: true
-
-dart_style:
-  code_width: 80
-  indent: 2

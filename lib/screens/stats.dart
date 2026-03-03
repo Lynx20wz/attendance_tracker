@@ -1,21 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:presents/providers.dart';
 import 'package:presents/student.dart';
 import 'package:presents/theme.dart';
 
 const _whiteText = TextStyle(color: Colors.white, fontSize: 20);
 
 class StatsPage extends StatelessWidget {
-  final Map<StudentStatus, List<Student>> statusCounts;
-
-  StatsPage(List<Student>? students, {super.key})
-    : statusCounts = {
-        for (var status in StudentStatus.values)
-          status:
-              (students ?? [])
-                  .where((s) => s.status == status)
-                  .toList(growable: false)
-                ..sort((a, b) => a.name.compareTo(b.name)),
-      };
+  const StatsPage({super.key});
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -28,16 +20,22 @@ class StatsPage extends StatelessWidget {
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
       ),
     ),
-    body: ListView.builder(
-      padding: const EdgeInsets.all(10),
-      itemCount: StudentStatus.values.length,
-      itemBuilder: (context, i) {
-        final status = StudentStatus.values[i];
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: StatsCard(statusCounts[status]!, status),
-        );
-      },
+    body: Consumer(
+      builder: (_, ref, _) => ListView.builder(
+        padding: const EdgeInsets.all(10),
+        itemCount: StudentStatus.values.length,
+        itemBuilder: (context, i) {
+          final status = StudentStatus.values[i];
+          final students = ref
+              .read(studentsProvider.notifier)
+              .getStudentStatuses()[status]!;
+
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: StatsCard(students, status),
+          );
+        },
+      ),
     ),
   );
 }
