@@ -20,8 +20,12 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  import_sorter: ^4.6.0
 
 flutter:
   uses-material-design: true
   assets:
     - assets/students.txt
+
+import_sorter:
+  comments: false

@@ -1,10 +1,11 @@
 import 'dart:developer' show log;
 
 import 'package:flutter/material.dart';
-import 'package:attendance_tracker/providers.dart';
-import 'package:attendance_tracker/screens/home_page.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:attendance_tracker/providers.dart';
+import 'package:attendance_tracker/screens/home_page.dart';
 import 'theme.dart';
 
 /// --- APP ROOT ---
