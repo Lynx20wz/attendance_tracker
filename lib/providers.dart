@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:riverpod/riverpod.dart';
 
 import 'storage.dart';
@@ -16,13 +18,11 @@ class StudentsNotifier extends AsyncNotifier<Set<Student>> {
     return await _repo.load();
   }
 
-  Future<void> save() async {
-    try {
-      await _repo.save(state.value!);
-    } catch (e, stack) {
-      state = AsyncValue.error(e, stack);
-    }
-  }
+  Future<void> save() async => state.when(
+    data: (students) => _repo.save(students),
+    error: (e, _) => log('Failed to save students: $e'),
+    loading: () => null,
+  );
 
   void updateStudentStatus(Student student, StudentStatus status) {
     state = state.whenData(
@@ -51,6 +51,7 @@ class StudentsNotifier extends AsyncNotifier<Set<Student>> {
           .map((s) => s.copyWith(status: StudentStatus.unknown))
           .toSet(),
     );
+    save();
   }
 }
 

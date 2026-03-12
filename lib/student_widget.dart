@@ -6,8 +6,8 @@ import 'package:attendance_tracker/student.dart';
 import 'package:attendance_tracker/theme.dart';
 import 'providers.dart';
 
-final cardHeight = 60.0;
-final cardWidth = 355.0;
+const cardHeight = 60.0;
+const cardWidth = 355.0;
 
 class StudentWidget extends ConsumerStatefulWidget {
   final Student? student;
