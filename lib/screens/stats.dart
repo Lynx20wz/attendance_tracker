@@ -12,7 +12,7 @@ class StatsPage extends StatelessWidget {
   const StatsPage({super.key});
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(final BuildContext context) => Scaffold(
     appBar: AppBar(
       title: const Text('Stats', style: TextStyle(fontSize: 24)),
       centerTitle: true,
@@ -23,10 +23,10 @@ class StatsPage extends StatelessWidget {
       ),
     ),
     body: Consumer(
-      builder: (_, ref, _) => ListView.builder(
+      builder: (_, final ref, _) => ListView.builder(
         padding: const EdgeInsets.all(10),
         itemCount: StudentStatus.values.length,
-        itemBuilder: (context, i) {
+        itemBuilder: (final context, final i) {
           final status = StudentStatus.values[i];
           final students = ref
               .read(studentsProvider.notifier)
@@ -59,7 +59,7 @@ class _StatsCardState extends State<StatsCard>
   bool _isExpanded = false;
 
   @override
-  Widget build(BuildContext context) => Column(
+  Widget build(final BuildContext context) => Column(
     children: [
       TextButton(
         style: TextButton.styleFrom(
@@ -100,7 +100,7 @@ class _StatsCardState extends State<StatsCard>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: widget.students.isNotEmpty
                   ? widget.students
-                        .map((s) => Text(s.name, style: _whiteText))
+                        .map((final s) => Text(s.name, style: _whiteText))
                         .toList()
                   : const [Text('No students', style: _whiteText)],
             ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'theme.dart';
 
-Color getStatusColor(StudentStatus status) {
+Color getStatusColor(final StudentStatus status) {
   switch (status) {
     case StudentStatus.present:
       return AppColors.present;
@@ -28,10 +28,10 @@ class Student {
   @override
   String toString() => toJson().toString();
 
-  Student copyWith({String? name, StudentStatus? status}) =>
+  Student copyWith({final String? name, final StudentStatus? status}) =>
       Student(name ?? this.name, status: status ?? this.status);
 
-  static Student fromJson(Map<String, dynamic> json) => Student(
+  static Student fromJson(final Map<String, dynamic> json) => Student(
     json['name']!,
     status: StudentStatus.values.byName(json['status']!),
   );

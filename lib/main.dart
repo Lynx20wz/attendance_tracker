@@ -32,7 +32,7 @@ class _AppState extends ConsumerState<App> with WidgetsBindingObserver {
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
+  void didChangeAppLifecycleState(final AppLifecycleState state) {
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.hidden) {
       ref.read(studentsProvider.notifier).save();
@@ -41,7 +41,7 @@ class _AppState extends ConsumerState<App> with WidgetsBindingObserver {
   }
 
   @override
-  Widget build(BuildContext context) => MaterialApp(
+  Widget build(final BuildContext context) => MaterialApp(
     title: 'Attendance Tracker',
     theme: AppTheme.darkTheme,
     home: const HomePage(),
