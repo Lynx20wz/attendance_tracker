@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:attendance_tracker/student.dart';
-import 'package:attendance_tracker/theme.dart';
-import 'providers.dart';
+import '../models/student.dart';
+import '../theme.dart';
+import '../viewmodels/students_viewmodel.dart';
 
 const cardHeight = 60.0;
 const cardWidth = 355.0;
@@ -23,14 +23,14 @@ class StudentWidget extends ConsumerStatefulWidget {
 class _StudentWidgetState extends ConsumerState<StudentWidget> {
   double _dragOffset = 0.0;
 
-  void setStudentStatus(StudentStatus status) {
+  void setStudentStatus(final StudentStatus status) {
     ref
         .read(studentsProvider.notifier)
         .updateStudentStatus(widget.student!, status);
   }
 
   @override
-  Widget build(BuildContext context) => widget.isEmpty
+  Widget build(final BuildContext context) => widget.isEmpty
       ? Container(
           width: cardWidth,
           height: cardHeight,
@@ -45,7 +45,7 @@ class _StudentWidgetState extends ConsumerState<StudentWidget> {
           ),
         )
       : GestureDetector(
-          onHorizontalDragUpdate: (details) {
+          onHorizontalDragUpdate: (final details) {
             setState(() {
               _dragOffset += details.delta.dx;
               _dragOffset = _dragOffset.clamp(-50.0, 50.0);
@@ -124,9 +124,9 @@ class _StudentWidgetState extends ConsumerState<StudentWidget> {
         );
 
   void _startSmoothReturn({
-    int steps = 100,
-    int totalDuration = 200,
-    int delay = 0,
+    final int steps = 100,
+    final int totalDuration = 200,
+    final int delay = 0,
   }) {
     Future.delayed(Duration(milliseconds: delay));
     for (int i = 0; i < steps; i++) {

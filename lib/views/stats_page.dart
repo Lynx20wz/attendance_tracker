@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:attendance_tracker/providers.dart';
-import 'package:attendance_tracker/student.dart';
-import 'package:attendance_tracker/theme.dart';
+import '../viewmodels/students_viewmodel.dart';
+import '../models/student.dart';
+import '../theme.dart';
 
 const _whiteText = TextStyle(color: Colors.white, fontSize: 20);
 

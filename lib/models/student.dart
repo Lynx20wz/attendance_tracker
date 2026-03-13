@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'theme.dart';
+import '../theme.dart';
 
 Color getStatusColor(final StudentStatus status) {
   switch (status) {
@@ -19,7 +19,7 @@ enum StudentStatus { present, absent, sick, unknown }
 
 class Student {
   final String name;
-  StudentStatus status = StudentStatus.unknown;
+  StudentStatus status;
 
   Student(this.name, {this.status = StudentStatus.unknown});
 

@@ -4,11 +4,10 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:attendance_tracker/providers.dart';
-import 'package:attendance_tracker/screens/home_page.dart';
+import 'package:attendance_tracker/viewmodels/students_viewmodel.dart';
+import 'package:attendance_tracker/views/home_page.dart';
 import 'theme.dart';
 
-/// --- APP ROOT ---
 void main() => runApp(ProviderScope(child: const App()));
 
 class App extends ConsumerStatefulWidget {
