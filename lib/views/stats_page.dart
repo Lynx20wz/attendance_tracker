@@ -15,8 +15,8 @@ class StatsPage extends StatelessWidget {
     appBar: AppBar(
       title: const Text('Stats', style: TextStyle(fontSize: 24)),
       centerTitle: true,
-      backgroundColor: AppColors.darkerGray,
-      toolbarHeight: 50,
+      backgroundColor: AppColors.cardBackground,
+      toolbarHeight: 60,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
       ),

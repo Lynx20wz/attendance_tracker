@@ -11,7 +11,7 @@ Color getStatusColor(final StudentStatus status) {
     case StudentStatus.absent:
       return AppColors.absent;
     default:
-      return AppColors.darkerGray;
+      return AppColors.cardBackground;
   }
 }
 
@@ -26,7 +26,7 @@ class Student {
   Map<String, String> toJson() => {'name': name, 'status': status.name};
 
   @override
-  String toString() => toJson().toString();
+  String toString() => 'Student(name: $name, status: $status)';
 
   Student copyWith({final String? name, final StudentStatus? status}) =>
       Student(name ?? this.name, status: status ?? this.status);
@@ -35,4 +35,11 @@ class Student {
     json['name']!,
     status: StudentStatus.values.byName(json['status']!),
   );
+
+  @override
+  bool operator ==(final Object other) =>
+      other is Student && hashCode == other.hashCode;
+
+  @override
+  int get hashCode => name.hashCode ^ status.hashCode;
 }

@@ -1,12 +1,13 @@
+import 'package:attendance_tracker/widgets/error_block.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../viewmodels/students_viewmodel.dart';
-import '../views/stats_page.dart';
-import '../views/students_editor.dart';
-import '../widgets/student_widget.dart';
 import '../theme.dart';
+import '../viewmodels/students_viewmodel.dart';
+import '../widgets/student_widget.dart';
+import 'stats_page.dart';
+import 'students_editor.dart';
 
 const cardGap = 8.0;
 
@@ -29,7 +30,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         child: const Text('List', style: TextStyle(fontSize: 24)),
       ),
       centerTitle: true,
-      backgroundColor: AppColors.darkerGray,
+      backgroundColor: AppColors.cardBackground,
       toolbarHeight: 50,
       leading: IconButton(
         onPressed: () => Navigator.push(
@@ -45,10 +46,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Center(
-                  child: Text(
-                    'Статусы сброшены',
-                    style: TextStyle(fontSize: 18),
-                  ),
+                  child: Text('Statuses reset', style: TextStyle(fontSize: 18)),
                 ),
               ),
             );
@@ -61,7 +59,8 @@ class _HomePageState extends ConsumerState<HomePage> {
         .watch(studentsProvider)
         .when(
           loading: () => const CircularProgressIndicator(),
-          error: (final error, _) => Text(error.toString()),
+          error: (final error, final stackTrace) =>
+              ErrorBlock(error, stackTrace: stackTrace),
           data: (final students) => students.isEmpty
               ? StudentWidget.empty()
               : ListView.separated(

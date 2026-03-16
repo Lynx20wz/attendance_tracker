@@ -111,7 +111,7 @@ class StudentsEditor extends ConsumerWidget {
             ref
                 .read(studentsProvider.notifier)
                 .updateStudent(Student(controller.text.trim()));
-            ref.read(studentsProvider.notifier).save();
+            ref.read(studentsProvider.notifier).saveCache();
           }
         },
       ),
@@ -309,11 +309,13 @@ class _StudentEditorCardState extends ConsumerState<_StudentEditorCard> {
   void _saveEdit() {
     final newName = _controller.text.trim();
     if (newName.isNotEmpty && newName != widget.student.name) {
-      ref.read(studentsProvider.notifier).updateStudent(
+      ref
+          .read(studentsProvider.notifier)
+          .updateStudent(
             Student(newName, status: widget.student.status),
             widget.student.name,
           );
-      ref.read(studentsProvider.notifier).save();
+      ref.read(studentsProvider.notifier).saveCache();
     }
     setState(() => _isEditing = false);
     if (Navigator.canPop(context)) Navigator.pop(context);
