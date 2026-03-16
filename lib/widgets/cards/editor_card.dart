@@ -127,7 +127,7 @@ class _EditorCardState extends ConsumerState<EditorCard> {
                       widget.student.name,
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 18,
+                        fontSize: 22,
                         fontWeight: FontWeight.w500,
                       ),
                     ),

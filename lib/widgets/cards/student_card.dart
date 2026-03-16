@@ -18,6 +18,8 @@ class StudentCard extends ConsumerStatefulWidget {
 }
 
 class _StudentCardState extends ConsumerState<StudentCard> {
+  static const _aspectRatio = 5 / 1;
+
   double _dragOffset = 0.0;
 
   void setStudentStatus(final StudentStatus status) {
@@ -29,7 +31,7 @@ class _StudentCardState extends ConsumerState<StudentCard> {
   int get _opacity => _dragOffset.abs().toInt() * 5;
 
   Widget _buildBg() => AspectRatio(
-    aspectRatio: 7 / 1,
+    aspectRatio: _aspectRatio,
     child: Container(
       decoration: BoxDecoration(
         color: _dragOffset > 0
@@ -88,7 +90,7 @@ class _StudentCardState extends ConsumerState<StudentCard> {
             children: [
               if (_dragOffset.abs() > 1) _buildBg(),
               AspectRatio(
-                aspectRatio: 7 / 1,
+                aspectRatio: _aspectRatio,
                 child: Transform.translate(
                   offset: Offset(_dragOffset, 0),
                   child: AnimatedContainer(

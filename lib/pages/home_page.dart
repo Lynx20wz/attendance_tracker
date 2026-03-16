@@ -27,6 +27,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         onPressed: () => Navigator.pushNamed(context, AppRoutes.editor.path),
         icon: Icon(Icons.list_alt),
       ),
+
       actions: [
         IconButton(
           onPressed: () {

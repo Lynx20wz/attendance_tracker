@@ -14,7 +14,10 @@ class EditorPage extends ConsumerWidget {
   @override
   Widget build(final BuildContext context, final WidgetRef ref) => Scaffold(
     appBar: AppBar(
-      title: const Text('Editor', style: TextStyle(fontSize: 24)),
+      title: const Text(
+        'Editor',
+        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      ),
       actions: [
         IconButton(
           onPressed: () => _showAddStudentDialog(context, ref),

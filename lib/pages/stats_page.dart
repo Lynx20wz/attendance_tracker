@@ -16,8 +16,6 @@ class StatsPage extends StatelessWidget {
         'Stats',
         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
       ),
-
-      elevation: 0,
     ),
     body: Consumer(
       builder: (_, final ref, _) => ListView.builder(

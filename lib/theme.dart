@@ -10,8 +10,6 @@ class AppColors {
 }
 
 abstract final class AppTheme {
-  static double get cardWidth => 355.0;
-
   static ThemeData get darkTheme => ThemeData.dark().copyWith(
     primaryColor: AppColors.bg,
     scaffoldBackgroundColor: AppColors.bg,
@@ -21,6 +19,7 @@ abstract final class AppTheme {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
       ),
+      scrolledUnderElevation: 0,
       backgroundColor: AppColors.cardBackground,
       centerTitle: true,
       toolbarHeight: 50,
