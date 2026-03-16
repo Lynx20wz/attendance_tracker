@@ -5,8 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../viewmodels/students_viewmodel.dart';
 import '../models/student.dart';
 import '../theme.dart';
-
-const _whiteText = TextStyle(color: Colors.white, fontSize: 20);
+import '../viewmodels/students_viewmodel.dart';
 
 class StatsPage extends StatelessWidget {
   const StatsPage({super.key});

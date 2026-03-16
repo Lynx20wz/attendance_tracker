@@ -6,8 +6,13 @@ import '../models/student.dart';
 import '../repositories/student_repository.dart';
 import '../repositories/student_repository_impl.dart';
 
-final studentsProvider =
-    AsyncNotifierProvider<StudentsViewModel, Set<Student>>(StudentsViewModel.new);
+final studentRepositoryProvider = Provider<StudentRepository>(
+  (_) => StudentRepositoryImpl(),
+);
+
+final studentsProvider = AsyncNotifierProvider<StudentsViewModel, Set<Student>>(
+  StudentsViewModel.new,
+);
 
 class StudentsViewModel extends AsyncNotifier<Set<Student>> {
   late final StudentRepository _repository;
@@ -15,39 +20,48 @@ class StudentsViewModel extends AsyncNotifier<Set<Student>> {
   @override
   Future<Set<Student>> build() async {
     _repository = ref.watch(studentRepositoryProvider);
-    return _sortStudents(await _repository.load());
+    return _sortStudents(await _load());
   }
 
-  /// Сохранение данных
-  Future<void> save() async {
-    state.when(
-      data: (final students) async {
-        await _repository.saveCache(students);
-        await _repository.saveStudentsFile(students);
-      },
-      error: (final e, _) => log('Failed to save students: $e'),
-      loading: () => null,
-    );
-  }
+  void deleteCache() => _repository.deleteCache();
 
-  /// Сортировка студентов по имени
-  Set<Student> _sortStudents(final List<Student> students) {
-    students.sort((final a, final b) => a.name.compareTo(b.name));
-    return students.toSet();
-  }
+  Map<StudentStatus, List<Student>> getStudentStatuses() => state
+      .whenData(
+        (final students) => {
+          for (var status in StudentStatus.values)
+            status:
+                students
+                    .where((final s) => s.status == status)
+                    .toList(growable: false)
+                  ..sort((final a, final b) => a.name.compareTo(b.name)),
+        },
+      )
+      .value!;
 
-  /// Обновление статуса студента
-  void updateStudentStatus(final Student student, final StudentStatus status) {
+  void removeStudent(final Student student) => state.whenData((final students) {
+    final updated = students
+        .where((final s) => s.name != student.name)
+        .toList();
+    state = AsyncValue.data(_sortStudents(updated));
+  });
+
+  void resetStatus() {
     state = state.whenData(
       (final students) => _sortStudents(
         students
-            .map((final s) => s.name == student.name ? s.copyWith(status: status) : s)
+            .map((final s) => s.copyWith(status: StudentStatus.unknown))
             .toList(),
       ),
     );
+    saveCache();
   }
 
-  /// Обновление или добавление студента
+  Future<void> saveCache() async => state.when(
+    data: (final students) async => await _repository.saveCache(students),
+    error: (final e, _) => log('Failed to save students: $e'),
+    loading: () => null,
+  );
+
   void updateStudent(final Student student, [final String oldName = '']) {
     if (student.name.isEmpty) return;
 
@@ -63,36 +77,29 @@ class StudentsViewModel extends AsyncNotifier<Set<Student>> {
     });
   }
 
-  /// Удаление студента
-  void removeStudent(final Student student) {
-    state.whenData((final students) {
-      final updated = students.where((final s) => s.name != student.name).toList();
-      state = AsyncValue.data(_sortStudents(updated));
-    });
+  void updateStudentStatus(final Student student, final StudentStatus status) =>
+      state = state.whenData(
+        (final students) => _sortStudents(
+          students
+              .map(
+                (final s) =>
+                    s.name == student.name ? s.copyWith(status: status) : s,
+              )
+              .toList(),
+        ),
+      );
+
+  Future<List<Student>> _load() async {
+    final cache = await _repository.loadCache();
+    if (cache != null && cache.isToday && cache.students.isNotEmpty) {
+      return cache.students;
+    }
+
+    return await _repository.loadDefaults();
   }
 
-  /// Получение студентов, сгруппированных по статусам
-  Map<StudentStatus, List<Student>> getStudentStatuses() =>
-      state.whenData((final students) => {
-          for (var status in StudentStatus.values)
-            status: students
-                .where((final s) => s.status == status)
-                .toList(growable: false)
-              ..sort((final a, final b) => a.name.compareTo(b.name)),
-        }).value!;
-
-  /// Сброс всех статусов
-  void resetStatus() {
-    state = state.whenData(
-      (final students) => _sortStudents(
-        students.map((final s) => s.copyWith(status: StudentStatus.unknown)).toList(),
-      ),
-    );
-    save();
+  Set<Student> _sortStudents(final List<Student> students) {
+    students.sort((final a, final b) => a.name.compareTo(b.name));
+    return students.toSet();
   }
 }
-
-/// Провайдер репозитория
-final studentRepositoryProvider = Provider<StudentRepository>(
-  (_) => StudentRepositoryImpl(),
-);

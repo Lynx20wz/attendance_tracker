@@ -3,15 +3,16 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
+
 import 'package:path_provider/path_provider.dart';
 
+import 'package:attendance_tracker/models/cache.dart';
 import '../models/student.dart';
-import '../ext/is_same_day.dart';
 import 'student_repository.dart';
 
 class StudentRepositoryImpl implements StudentRepository {
   @override
-  Future<List<Student>> load() async {
+  Future<Cache?> loadCache() async {
     final dir = await getApplicationDocumentsDirectory();
 
     log('Loading students from cache... ($dir');
@@ -20,14 +21,15 @@ class StudentRepositoryImpl implements StudentRepository {
 
     if (await file.exists()) {
       final json = jsonDecode(await file.readAsString());
-
-      final date = DateTime.fromMillisecondsSinceEpoch(json['timestamp']);
-      if (date.isSameDay(DateTime.now()) && json['students'].length > 0) {
-        return [for (var s in json['students']) Student.fromJson(s)];
-      }
-      await deleteCache(); // if exists, but stale
+      log('Cache loaded: $json');
+      return Cache.fromJson(json);
     }
 
+    return null;
+  }
+
+  @override
+  Future<List<Student>> loadDefaults() async {
     final lines = (await rootBundle.loadString('assets/students.txt'))
         .split('\n')
         .map((final line) => line.trim())
