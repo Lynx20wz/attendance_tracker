@@ -1,5 +1,5 @@
-import '../models/cache.dart';
-import '../models/student.dart';
+import 'package:attendance_tracker/models/cache.dart';
+import 'package:attendance_tracker/models/student.dart';
 
 abstract class StudentRepository {
   Future<Cache?> loadCache();

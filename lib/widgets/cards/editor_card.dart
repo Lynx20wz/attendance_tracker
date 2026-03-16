@@ -2,111 +2,21 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../viewmodels/students_viewmodel.dart';
-import '../models/student.dart';
-import '../theme.dart';
+import 'package:attendance_tracker/models/student.dart';
+import 'package:attendance_tracker/theme.dart';
+import 'package:attendance_tracker/viewmodels/students_viewmodel.dart';
+import 'package:attendance_tracker/widgets/student_dialog.dart';
 
-class StudentsEditor extends ConsumerWidget {
-  const StudentsEditor({super.key});
-
-  @override
-  Widget build(final BuildContext context, final WidgetRef ref) => Scaffold(
-    appBar: AppBar(
-      title: const Text('Editor', style: TextStyle(fontSize: 24)),
-      centerTitle: true,
-      backgroundColor: AppColors.cardBackground,
-      toolbarHeight: 50,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
-      ),
-      actions: [
-        IconButton(
-          onPressed: () => _showAddStudentDialog(context, ref),
-          icon: const Icon(Icons.add),
-        ),
-      ],
-    ),
-    body: ref
-        .watch(studentsProvider)
-        .when(
-          data: (final students) => students.isEmpty
-              ? _buildEmptyState(context)
-              : ListView.separated(
-                  padding: const EdgeInsets.all(12),
-                  separatorBuilder: (_, _) => const SizedBox(height: 10),
-                  itemCount: students.length,
-                  itemBuilder: (_, final i) =>
-                      _StudentEditorCard(student: students.elementAt(i)),
-                ),
-          error: (final error, final stackTrace) => _buildErrorState(error),
-          loading: () => const Center(child: CircularProgressIndicator()),
-        ),
-  );
-
-  Widget _buildEmptyState(final BuildContext context) => Center(
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(Icons.people_outline, size: 80, color: Colors.white30),
-        const SizedBox(height: 16),
-        Text(
-          'No students',
-          style: TextStyle(color: Colors.white60, fontSize: 20),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Tap + to add',
-          style: TextStyle(color: Colors.white30, fontSize: 14),
-        ),
-      ],
-    ),
-  );
-
-  Widget _buildErrorState(final Object error) => Center(
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Icon(Icons.error_outline, size: 60, color: Colors.red),
-        const SizedBox(height: 16),
-        Text(
-          'Exceptions: $error',
-          style: const TextStyle(color: Colors.red),
-          textAlign: TextAlign.center,
-        ),
-      ],
-    ),
-  );
-
-  void _showAddStudentDialog(final BuildContext context, final WidgetRef ref) {
-    final controller = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (_) => _StudentDialog(
-        title: 'New student',
-        controller: controller,
-        onConfirm: () {
-          if (controller.text.trim().isNotEmpty) {
-            ref
-                .read(studentsProvider.notifier)
-                .updateStudent(Student(controller.text.trim()));
-            ref.read(studentsProvider.notifier).saveCache();
-          }
-        },
-      ),
-    );
-  }
-}
-
-class _StudentEditorCard extends ConsumerStatefulWidget {
+class EditorCard extends ConsumerStatefulWidget {
   final Student student;
 
-  const _StudentEditorCard({required this.student});
+  const EditorCard({required this.student, super.key});
 
   @override
-  ConsumerState<_StudentEditorCard> createState() => _StudentEditorCardState();
+  ConsumerState<EditorCard> createState() => _EditorCardState();
 }
 
-class _StudentEditorCardState extends ConsumerState<_StudentEditorCard> {
+class _EditorCardState extends ConsumerState<EditorCard> {
   bool _isEditing = false;
   late TextEditingController _controller;
 
@@ -172,8 +82,7 @@ class _StudentEditorCardState extends ConsumerState<_StudentEditorCard> {
 
       return confirmed ?? false;
     },
-    child: AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
+    child: Container(
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
         borderRadius: BorderRadius.circular(12),
@@ -186,7 +95,7 @@ class _StudentEditorCardState extends ConsumerState<_StudentEditorCard> {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
         child: Row(
           children: [
             Expanded(
@@ -255,7 +164,7 @@ class _StudentEditorCardState extends ConsumerState<_StudentEditorCard> {
   void _showEditDialog(final BuildContext context) {
     showDialog(
       context: context,
-      builder: (_) => _StudentDialog(
+      builder: (_) => StudentDialog(
         title: 'Edit',
         controller: _controller,
         onConfirm: _saveEdit,
@@ -281,50 +190,4 @@ class _StudentEditorCardState extends ConsumerState<_StudentEditorCard> {
     setState(() => _isEditing = false);
     _controller.text = widget.student.name;
   }
-}
-
-class _StudentDialog extends StatelessWidget {
-  final String title;
-  final TextEditingController controller;
-  final VoidCallback onConfirm;
-
-  const _StudentDialog({
-    required this.title,
-    required this.controller,
-    required this.onConfirm,
-  });
-
-  @override
-  Widget build(final BuildContext context) => AlertDialog(
-    backgroundColor: AppColors.cardBackground,
-    title: Text(title, style: const TextStyle(color: Colors.white)),
-    content: TextField(
-      controller: controller,
-      style: const TextStyle(color: Colors.white),
-      decoration: InputDecoration(
-        hintText: 'Student name',
-        hintStyle: const TextStyle(color: Colors.white54),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Colors.white, width: 2),
-        ),
-      ),
-      onSubmitted: (_) => onConfirm(),
-    ),
-    actions: [
-      TextButton(
-        onPressed: () => Navigator.pop(context),
-        child: const Text('Cancel'),
-      ),
-      TextButton(
-        onPressed: () {
-          onConfirm();
-          Navigator.pop(context);
-        },
-        style: TextButton.styleFrom(foregroundColor: AppColors.present),
-        child: const Text('OK'),
-      ),
-    ],
-  );
 }

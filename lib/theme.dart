@@ -9,21 +9,21 @@ class AppColors {
   static const absent = Color(0xFF641B1B);
 }
 
-class AppTheme {
+abstract final class AppTheme {
+  static double get cardWidth => 355.0;
+
   static ThemeData get darkTheme => ThemeData.dark().copyWith(
     primaryColor: AppColors.bg,
     scaffoldBackgroundColor: AppColors.bg,
     canvasColor: AppColors.cardBackground,
 
     appBarTheme: AppBarTheme(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+      ),
       backgroundColor: AppColors.cardBackground,
-      elevation: 0,
-    ),
-
-    listTileTheme: ListTileThemeData(tileColor: AppColors.gray1),
-
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(backgroundColor: AppColors.gray1),
+      centerTitle: true,
+      toolbarHeight: 50,
     ),
 
     textButtonTheme: TextButtonThemeData(
@@ -34,12 +34,6 @@ class AppTheme {
       backgroundColor: AppColors.cardBackground,
       contentTextStyle: const TextStyle(color: Colors.white),
       behavior: SnackBarBehavior.floating,
-    ),
-
-    colorScheme: ColorScheme.dark(
-      primary: AppColors.bg,
-      secondary: AppColors.gray1,
-      surface: AppColors.cardBackground,
     ),
   );
 }

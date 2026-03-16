@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:attendance_tracker/routes.dart';
+import 'package:attendance_tracker/theme.dart';
 import 'package:attendance_tracker/viewmodels/students_viewmodel.dart';
-import 'package:attendance_tracker/views/home_page.dart';
-import 'theme.dart';
 
 void main() => runApp(ProviderScope(child: const App()));
 
@@ -41,8 +41,10 @@ class _AppState extends ConsumerState<App> with WidgetsBindingObserver {
 
   @override
   Widget build(final BuildContext context) => MaterialApp(
+    routes: {
+      for (final route in AppRoutes.values) route.path: (_) => route.page,
+    },
     title: 'Attendance Tracker',
     theme: AppTheme.darkTheme,
-    home: const HomePage(),
   );
 }

@@ -7,8 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:attendance_tracker/models/cache.dart';
-import '../models/student.dart';
-import 'student_repository.dart';
+import 'package:attendance_tracker/models/student.dart';
+import 'package:attendance_tracker/repositories/student_repository.dart';
 
 class StudentRepositoryImpl implements StudentRepository {
   @override

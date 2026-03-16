@@ -8,3 +8,4 @@ linter:
     eol_at_end_of_file: true
     prefer_final_parameters: true
     avoid_redundant_argument_values: true
+    always_use_package_imports: true

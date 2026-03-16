@@ -2,9 +2,9 @@ import 'dart:developer';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/student.dart';
-import '../repositories/student_repository.dart';
-import '../repositories/student_repository_impl.dart';
+import 'package:attendance_tracker/models/student.dart';
+import 'package:attendance_tracker/repositories/student_repository.dart';
+import 'package:attendance_tracker/repositories/student_repository_impl.dart';
 
 final studentRepositoryProvider = Provider<StudentRepository>(
   (_) => StudentRepositoryImpl(),
@@ -25,18 +25,18 @@ class StudentsViewModel extends AsyncNotifier<Set<Student>> {
 
   void deleteCache() => _repository.deleteCache();
 
-  Map<StudentStatus, List<Student>> getStudentStatuses() => state
-      .whenData(
-        (final students) => {
-          for (var status in StudentStatus.values)
-            status:
-                students
-                    .where((final s) => s.status == status)
-                    .toList(growable: false)
-                  ..sort((final a, final b) => a.name.compareTo(b.name)),
-        },
-      )
-      .value!;
+  Map<StudentStatus, List<Student>> get studentStatuses => state.when(
+    data: (final students) => {
+      for (final status in StudentStatus.values)
+        status:
+            students
+                .where((final s) => s.status == status)
+                .toList(growable: false)
+              ..sort((final a, final b) => a.name.compareTo(b.name)),
+    },
+    loading: () => {},
+    error: (_, _) => {},
+  );
 
   void removeStudent(final Student student) => state.whenData((final students) {
     final updated = students

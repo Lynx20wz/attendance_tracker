@@ -1,13 +1,10 @@
-import 'package:attendance_tracker/widgets/error_block.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../theme.dart';
-import '../viewmodels/students_viewmodel.dart';
-import '../widgets/student_widget.dart';
-import 'stats_page.dart';
-import 'students_editor.dart';
+import 'package:attendance_tracker/routes.dart';
+import 'package:attendance_tracker/viewmodels/students_viewmodel.dart';
+import 'package:attendance_tracker/widgets/widgets.dart';
 
 const cardGap = 8.0;
 
@@ -23,20 +20,11 @@ class _HomePageState extends ConsumerState<HomePage> {
   Widget build(final BuildContext context) => Scaffold(
     appBar: AppBar(
       title: TextButton(
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const StatsPage()),
-        ),
+        onPressed: () => Navigator.pushNamed(context, AppRoutes.stats.path),
         child: const Text('List', style: TextStyle(fontSize: 24)),
       ),
-      centerTitle: true,
-      backgroundColor: AppColors.cardBackground,
-      toolbarHeight: 50,
       leading: IconButton(
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const StudentsEditor()),
-        ),
+        onPressed: () => Navigator.pushNamed(context, AppRoutes.editor.path),
         icon: Icon(Icons.list_alt),
       ),
       actions: [
@@ -62,14 +50,31 @@ class _HomePageState extends ConsumerState<HomePage> {
           error: (final error, final stackTrace) =>
               ErrorBlock(error, stackTrace: stackTrace),
           data: (final students) => students.isEmpty
-              ? StudentWidget.empty()
+              ? _buildEmptyState()
               : ListView.separated(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.all(12),
                   separatorBuilder: (_, _) => const SizedBox(height: cardGap),
                   itemCount: students.length,
                   itemBuilder: (_, final i) =>
-                      Center(child: StudentWidget(students.elementAt(i))),
+                      Center(child: StudentCard(students.elementAt(i))),
                 ),
         ),
+  );
+
+  Widget _buildEmptyState() => Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.people_outline, size: 80, color: Colors.white30),
+        Text(
+          'No students',
+          style: TextStyle(color: Colors.white60, fontSize: 20),
+        ),
+        Text(
+          'Go to the edit page to add students',
+          style: TextStyle(color: Colors.white30, fontSize: 14),
+        ),
+      ],
+    ),
   );
 }

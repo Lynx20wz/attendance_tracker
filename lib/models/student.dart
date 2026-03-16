@@ -1,21 +1,15 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show Color;
 
-import '../theme.dart';
-
-Color getStatusColor(final StudentStatus status) {
-  switch (status) {
-    case StudentStatus.present:
-      return AppColors.present;
-    case StudentStatus.sick:
-      return AppColors.sick;
-    case StudentStatus.absent:
-      return AppColors.absent;
-    default:
-      return AppColors.cardBackground;
-  }
-}
+import 'package:attendance_tracker/theme.dart';
 
 enum StudentStatus { present, absent, sick, unknown }
+
+final statusColors = <StudentStatus, Color>{
+  StudentStatus.present: AppColors.present,
+  StudentStatus.sick: AppColors.sick,
+  StudentStatus.absent: AppColors.absent,
+  StudentStatus.unknown: AppColors.cardBackground,
+};
 
 class Student {
   final String name;
