@@ -18,8 +18,6 @@ class StudentCard extends ConsumerStatefulWidget {
 }
 
 class _StudentCardState extends ConsumerState<StudentCard> {
-  static const _aspectRatio = 5 / 1;
-
   double _dragOffset = 0.0;
 
   void setStudentStatus(final StudentStatus status) {
@@ -30,26 +28,21 @@ class _StudentCardState extends ConsumerState<StudentCard> {
 
   int get _opacity => _dragOffset.abs().toInt() * 5;
 
-  Widget _buildBg() => AspectRatio(
-    aspectRatio: _aspectRatio,
+  Widget _buildBg() => Container(
+    decoration: BoxDecoration(
+      color: _dragOffset > 0
+          ? AppColors.sick.withAlpha(_opacity)
+          : AppColors.absent.withAlpha(_opacity),
+      borderRadius: BorderRadius.circular(10),
+    ),
     child: Container(
-      decoration: BoxDecoration(
-        color: _dragOffset > 0
-            ? AppColors.sick.withAlpha(_opacity)
-            : AppColors.absent.withAlpha(_opacity),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 10),
-        alignment: _dragOffset > 0
-            ? Alignment.centerLeft
-            : Alignment.centerRight,
-        width: double.infinity,
-        child: Icon(
-          _dragOffset > 0 ? Icons.masks : Icons.directions_run,
-          size: 32,
-          color: Color.fromARGB(_opacity, 255, 255, 255),
-        ),
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      alignment: _dragOffset > 0 ? Alignment.centerLeft : Alignment.centerRight,
+      width: double.infinity,
+      child: Icon(
+        _dragOffset > 0 ? Icons.masks : Icons.directions_run,
+        size: 32,
+        color: Color.fromARGB(_opacity, 255, 255, 255),
       ),
     ),
   );
@@ -88,35 +81,31 @@ class _StudentCardState extends ConsumerState<StudentCard> {
           },
           child: Stack(
             children: [
-              if (_dragOffset.abs() > 1) _buildBg(),
-              AspectRatio(
-                aspectRatio: _aspectRatio,
-                child: Transform.translate(
-                  offset: Offset(_dragOffset, 0),
-                  child: AnimatedContainer(
-                    duration: Duration(milliseconds: 200),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color:
-                          statusColors[widget.student!.status] ??
-                          AppColors.cardBackground,
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: TextButton(
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
+              if (_dragOffset.abs() > 1) Positioned.fill(child: _buildBg()),
+              Transform.translate(
+                offset: Offset(_dragOffset, 0),
+                child: AnimatedContainer(
+                  duration: Duration(milliseconds: 200),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color:
+                        statusColors[widget.student!.status] ??
+                        AppColors.cardBackground,
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
-                      child: Text(
-                        widget.student!.name,
-                        style: TextStyle(color: Colors.white, fontSize: 28),
-                      ),
-                      onPressed: () => setStudentStatus(StudentStatus.present),
-                      onLongPress: () =>
-                          setStudentStatus(StudentStatus.unknown),
                     ),
+                    child: Text(
+                      widget.student!.name,
+                      style: TextStyle(color: Colors.white, fontSize: 28),
+                    ),
+                    onPressed: () => setStudentStatus(StudentStatus.present),
+                    onLongPress: () => setStudentStatus(StudentStatus.unknown),
                   ),
                 ),
               ),

@@ -109,12 +109,12 @@ class _StatsCardState extends State<StatsCard>
                   if (hasStudents)
                     ...widget.students.map(
                       (final student) => Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
+                        padding: const EdgeInsets.only(bottom: 6),
                         child: Text(
                           student.name,
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 16,
+                            fontSize: 20,
                           ),
                         ),
                       ),
