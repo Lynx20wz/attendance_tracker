@@ -35,7 +35,7 @@ class _StudentWidgetState extends ConsumerState<StudentWidget> {
           width: cardWidth,
           height: cardHeight,
           decoration: BoxDecoration(
-            color: AppColors.darkerGray,
+            color: AppColors.cardBackground,
             borderRadius: BorderRadius.circular(10),
           ),
           alignment: Alignment.center,
@@ -52,9 +52,11 @@ class _StudentWidgetState extends ConsumerState<StudentWidget> {
             });
           },
           onHorizontalDragEnd: (_) {
-            setStudentStatus(
-              _dragOffset >= 50 ? StudentStatus.sick : StudentStatus.absent,
-            );
+            setStudentStatus(switch (_dragOffset) {
+              _ when _dragOffset >= 50 => StudentStatus.sick,
+              _ when _dragOffset <= -50 => StudentStatus.absent,
+              _ => widget.student?.status ?? StudentStatus.present,
+            });
 
             _startSmoothReturn(delay: 50);
           },
