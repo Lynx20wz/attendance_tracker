@@ -1,6 +1,6 @@
 name: attendance_tracker
 description: Student attendance tracker
-version: 0.2.2
+version: 0.2.3
 repository: https://github.com/Lynx20wz/attendance_tracker
 
 environment:

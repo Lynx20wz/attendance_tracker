@@ -29,6 +29,10 @@ abstract final class AppTheme {
       style: TextButton.styleFrom(foregroundColor: Colors.white),
     ),
 
+    iconButtonTheme: IconButtonThemeData(
+      style: IconButton.styleFrom(disabledForegroundColor: Colors.white30),
+    ),
+
     snackBarTheme: SnackBarThemeData(
       backgroundColor: AppColors.cardBackground,
       contentTextStyle: const TextStyle(color: Colors.white),
